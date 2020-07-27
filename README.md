@@ -1,4 +1,4 @@
-# Koa2 tutorial for dummies
+# Koa2 tutorial
 
 ## 是什么
 

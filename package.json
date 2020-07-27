@@ -9,6 +9,7 @@
   "author": "vno <volving@icloud.com> (http://vno.io)",
   "license": "MIT",
   "dependencies": {
-    "koa": "^2.13.0"
+    "koa": "^2.13.0",
+    "koa-router": "^9.1.0"
   }
 }
