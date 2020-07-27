@@ -1,59 +1,23 @@
+const fs = require('fs');
+const { resolve } = require('path');
 const Koa = require('koa');
-const app = new Koa();
-
-/*
-app.use(handler);
-
-function handler(ctx) {
-    console.log(ctx.request);
-    if (ctx.request.accepts('html')) {
-        ctx.response.type = 'html';
-        ctx.response.body = '<p>Hello, html message</p>';
-    } else if (ctx.accepts('json')) {
-        ctx.type = 'json';
-        ctx.body = { data: 'Hello, json' };
-    } else if (ctx.accepts('xml')) {
-        ctx.type = 'xml';
-        ctx.body = '<xml><data>Hello, xml</data></xml>';
-        ``;
-    } else {
-        ctx.type = 'text';
-        ctx.body = 'Hello, this is koa server';
-    }
-}
-*/
-
-// 引入路由模块
 const Router = require('koa-router');
 
-// 定义子路由
-let home = new Router();
-home.get('/', (ctx) => {
-    ctx.type = 'json';
-    ctx.body = {
-        data: [
-            { id: 'profile', api: 'getProfile' },
-            { id: 'about', api: 'getAbout' },
-        ],
-    };
-});
 
-// 定义子路由
-let about = new Router();
-about.get('/', async (ctx, next) => {
-    let startTS = Date.now();
-    await next();
-    let span = Date.now() - startTS;
-    ctx.body = `Time used: ${span}`;
-});
+const app = new Koa();
 
-
-// 装载路由
+// 加载路由
 let router = new Router();
-router.use('/', home.routes(), home.allowedMethods());
-router.use('/about', about.routes(), about.allowedMethods());
+let routes = fs.readdirSync(resolve(__dirname, 'routes'));
+routes.forEach((rname) => {
+    let { r } = require(resolve(__dirname, 'routes', rname));
+    console.log(rname.replace('.js', ''));
+    router.use(`/${rname.replace('.js', '')}`, r.routes(), r.allowedMethods());
+});
 
-app.use(router.routes()).use(router.allowedMethods());
+
+// 使用路由中间件
+app.use(router.routes())
 
 // 启动监听
 let PORT = process.env.PORT || 4096;
